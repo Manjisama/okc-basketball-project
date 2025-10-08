@@ -1,1 +1,315 @@
-<div class="placeholder">Place your content here!</div>
+<div class="player-summary-container">
+  <!-- 头部信息和坐标说明 -->
+  <div class="header-section">
+    <h1>Player Summary</h1>
+    <div class="coordinate-info">
+      <mat-icon class="info-icon">info</mat-icon>
+      <span>Coordinates are in feet. x/y coordinates are relative to the offensive basket center (see court_diagram.jpg in repository). Missing coordinates are displayed as "—".</span>
+    </div>
+  </div>
+
+  <!-- 搜索输入框 -->
+  <div class="search-section">
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-label>Player ID</mat-label>
+      <input 
+        matInput 
+        [(ngModel)]="playerIdInput" 
+        placeholder="Enter player ID"
+        (keypress)="onKeyPress($event)"
+        [disabled]="state.loading">
+    </mat-form-field>
+    <button 
+      mat-raised-button 
+      color="primary" 
+      (click)="onSearchPlayer()" 
+      [disabled]="state.loading || !playerIdInput.trim()"
+      class="search-button">
+      <mat-icon *ngIf="!state.loading">search</mat-icon>
+      <mat-spinner *ngIf="state.loading" diameter="20"></mat-spinner>
+      <span>{{state.loading ? 'Loading...' : 'Load'}}</span>
+    </button>
+  </div>
+
+  <!-- 错误状态 -->
+  <div *ngIf="state.error" class="error-section">
+    <mat-card class="error-card">
+      <mat-card-content>
+        <div class="error-content">
+          <mat-icon color="warn" class="error-icon">error</mat-icon>
+          <div class="error-text">
+            <h3>Error Loading Data</h3>
+            <p>{{state.error}}</p>
+          </div>
+          <button 
+            mat-icon-button 
+            (click)="onClearError()" 
+            class="close-button"
+            matTooltip="Close error">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+        <div class="error-actions">
+          <button 
+            mat-button 
+            color="primary" 
+            (click)="onRetry()"
+            [disabled]="!playerIdInput.trim()">
+            <mat-icon>refresh</mat-icon>
+            Retry
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- 数据展示 -->
+  <div *ngIf="hasData()" class="data-section">
+    
+    <!-- 球员基本信息 -->
+    <div class="player-info-card">
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon class="player-icon">person</mat-icon>
+            Player ID: {{state.data.playerId}}
+          </mat-card-title>
+        </mat-card-header>
+      </mat-card>
+    </div>
+
+    <!-- 总体统计和排名 -->
+    <div class="totals-section">
+      <h2>Overall Statistics</h2>
+      <div class="stats-grid">
+        
+        <!-- 总体统计卡片 -->
+        <mat-card class="totals-card">
+          <mat-card-header>
+            <mat-card-title>Totals</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="totals-grid">
+              <div class="stat-item">
+                <div class="stat-value">{{state.data.totals.points}}</div>
+                <div class="stat-label">Points</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-value">{{state.data.totals.makes}}</div>
+                <div class="stat-label">Makes</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-value">{{state.data.totals.misses}}</div>
+                <div class="stat-label">Misses</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-value">{{state.data.totals.passes}}</div>
+                <div class="stat-label">Passes</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-value">{{state.data.totals.turnovers}}</div>
+                <div class="stat-label">Turnovers</div>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- 排名卡片 -->
+        <mat-card class="ranks-card">
+          <mat-card-header>
+            <mat-card-title>Ranks</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="ranks-grid">
+              <div class="rank-item">
+                <div class="rank-value">{{formatRank(state.data.ranks.points)}}</div>
+                <div class="rank-label">Points</div>
+              </div>
+              <div class="rank-item">
+                <div class="rank-value">{{formatRank(state.data.ranks.makes)}}</div>
+                <div class="rank-label">Makes</div>
+              </div>
+              <div class="rank-item">
+                <div class="rank-value">{{formatRank(state.data.ranks.misses)}}</div>
+                <div class="rank-label">Misses</div>
+              </div>
+              <div class="rank-item">
+                <div class="rank-value">{{formatRank(state.data.ranks.passes)}}</div>
+                <div class="rank-label">Passes</div>
+              </div>
+              <div class="rank-item">
+                <div class="rank-value">{{formatRank(state.data.ranks.turnovers)}}</div>
+                <div class="rank-label">Turnovers</div>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+
+    <!-- 动作类型统计 -->
+    <div class="actions-section">
+      <h2>Action Type Breakdown</h2>
+      <div class="actions-grid">
+        <mat-card 
+          *ngFor="let actionKey of actionTypes" 
+          class="action-card"
+          [class.has-data]="hasActionData(actionKey)"
+          [class.no-data]="!hasActionData(actionKey)">
+          
+          <mat-card-header>
+            <mat-card-title>
+              <mat-icon class="action-icon">{{actionConfigs.find(c => c.key === actionKey)?.icon || 'help'}}</mat-icon>
+              {{getActionDisplayName(actionKey)}}
+            </mat-card-title>
+          </mat-card-header>
+
+          <mat-card-content>
+            <div *ngIf="hasActionData(actionKey); else noActionData">
+              
+              <!-- 动作组统计 -->
+              <div class="action-stats" *ngIf="getActionData(actionKey).totals">
+                <div class="stat-row">
+                  <div class="stat-cell">
+                    <span class="stat-number">{{getActionData(actionKey).totals.shots}}</span>
+                    <span class="stat-text">Shots</span>
+                  </div>
+                  <div class="stat-cell">
+                    <span class="stat-number">{{getActionData(actionKey).totals.makes}}</span>
+                    <span class="stat-text">Makes</span>
+                  </div>
+                  <div class="stat-cell">
+                    <span class="stat-number">{{getActionData(actionKey).totals.misses}}</span>
+                    <span class="stat-text">Misses</span>
+                  </div>
+                </div>
+                <div class="stat-row">
+                  <div class="stat-cell">
+                    <span class="stat-number">{{getActionData(actionKey).totals.passes}}</span>
+                    <span class="stat-text">Passes</span>
+                  </div>
+                  <div class="stat-cell">
+                    <span class="stat-number">{{getActionData(actionKey).totals.turnovers}}</span>
+                    <span class="stat-text">Turnovers</span>
+                  </div>
+                  <div class="stat-cell">
+                    <span class="stat-number">{{formatPoints(getActionData(actionKey).totals.points)}}</span>
+                    <span class="stat-text">Points</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 示例坐标 -->
+              <div class="coordinate-samples">
+                <h4>Sample Coordinates:</h4>
+                
+                <!-- 投篮示例 -->
+                <div *ngIf="getEventCount(actionKey, 'shots') > 0" class="coordinate-group">
+                  <h5>Shots ({{getEventCount(actionKey, 'shots')}} total):</h5>
+                  <div class="coordinate-list">
+                    <div 
+                      *ngFor="let shot of getSampleEvents(actionKey, 'shots', 3)" 
+                      class="coordinate-item shot-item">
+                      <span class="coordinate-type">Shot:</span>
+                      <span class="coordinate-value">{{formatCoordinate(shot.x, shot.y)}}</span>
+                      <span class="coordinate-result" [class.make]="shot.shot_result === 'make'" [class.miss]="shot.shot_result === 'miss'">
+                        {{shot.shot_result}} ({{shot.points}} pts)
+                      </span>
+                      <span *ngIf="shot.occurred_at" class="coordinate-time">{{shot.occurred_at | date:'short'}}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 传球示例 -->
+                <div *ngIf="getEventCount(actionKey, 'passes') > 0" class="coordinate-group">
+                  <h5>Passes ({{getEventCount(actionKey, 'passes')}} total):</h5>
+                  <div class="coordinate-list">
+                    <div 
+                      *ngFor="let pass of getSampleEvents(actionKey, 'passes', 2)" 
+                      class="coordinate-item pass-item">
+                      <span class="coordinate-type">Pass:</span>
+                      <span class="coordinate-value">{{formatCoordinate(pass.x, pass.y)}}</span>
+                      <span *ngIf="pass.target_player_id" class="coordinate-target">
+                        → Player {{pass.target_player_id}}
+                      </span>
+                      <span *ngIf="pass.occurred_at" class="coordinate-time">{{pass.occurred_at | date:'short'}}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 失误示例 -->
+                <div *ngIf="getEventCount(actionKey, 'turnovers') > 0" class="coordinate-group">
+                  <h5>Turnovers ({{getEventCount(actionKey, 'turnovers')}} total):</h5>
+                  <div class="coordinate-list">
+                    <div 
+                      *ngFor="let turnover of getSampleEvents(actionKey, 'turnovers', 2)" 
+                      class="coordinate-item turnover-item">
+                      <span class="coordinate-type">Turnover:</span>
+                      <span class="coordinate-value">{{formatCoordinate(turnover.x, turnover.y)}}</span>
+                      <span *ngIf="turnover.turnover_type" class="coordinate-type-info">
+                        ({{turnover.turnover_type}})
+                      </span>
+                      <span *ngIf="turnover.occurred_at" class="coordinate-time">{{turnover.occurred_at | date:'short'}}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 无数据模板 -->
+            <ng-template #noActionData>
+              <div class="no-data">
+                <mat-icon>info</mat-icon>
+                <p>No events found for this action type</p>
+              </div>
+            </ng-template>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+
+    <!-- 空数据提示 -->
+    <div *ngIf="isEmptyData()" class="empty-data-section">
+      <mat-card class="empty-card">
+        <mat-card-content>
+          <div class="empty-content">
+            <mat-icon class="empty-icon">info</mat-icon>
+            <h3>No Events Found</h3>
+            <p>This player has no recorded events in the system.</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Court Visualization -->
+    <div class="court-visualization-section" *ngIf="vizEvents.length > 0">
+      <h2>Court Visualization</h2>
+      <app-court-visualization
+        [width]="680"
+        [height]="640"
+        [events]="vizEvents"
+        [activeActions]="selectedActions"
+        [activeEventTypes]="selectedEventTypes"
+        [actionOf]="actionOf"
+        [maxPointsToRender]="3000"
+        [pointSize]="6"
+        [showTooltips]="true"
+        [enableFiltering]="true">
+      </app-court-visualization>
+    </div>
+  </div>
+
+  <!-- 初始状态提示 -->
+  <div *ngIf="!state.loading && !state.data && !state.error" class="initial-state">
+    <mat-card class="initial-card">
+      <mat-card-content>
+        <div class="initial-content">
+          <mat-icon class="initial-icon">search</mat-icon>
+          <h3>Enter Player ID</h3>
+          <p>Use the search box above to load player summary data.</p>
+          <p>You can also use URL parameters: <code>?playerID=123</code></p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

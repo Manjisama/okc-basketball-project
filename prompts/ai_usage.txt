@@ -1,0 +1,26 @@
+This file documents limited AI assistance used during development. 
+All core logic, debugging, and implementation were performed manually.
+
+[Prompt 1] Database Schema Design
+Model: ChatGPT 5 Thinking
+Role: Assisted with ERD diagram formatting and naming conventions validation.
+
+[Prompt 3] Django Models Implementation
+Model: ChatGPT 5 Thinking
+Role: Helped verify model relationships and generate migration command syntax.
+
+[Prompt 5] Development Automation Scripts
+Model: ChatGPT 5 Thinking
+Role: Suggested bash script structure for common development tasks (ETL, dump, run).
+
+[Prompt 7] SVG Court Visualization
+Model: Cursor-GPT-4o
+Role: Supported coordinate mapping logic and performance optimization for Angular SVG rendering.
+
+[Prompt 8] Railway Deployment Configuration
+Model: ChatGPT 5 Thinking
+Role: Reviewed Procfile and settings.py configuration for Railway platform compatibility.
+
+[Prompt 9] Documentation Generation
+Model: ChatGPT 5 Thinking
+Role: Formatted submission documentation and AI usage record into structured markdown.

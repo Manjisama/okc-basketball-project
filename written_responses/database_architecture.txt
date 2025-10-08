@@ -1,0 +1,28 @@
+Database Architecture Documentation
+
+This system adopts 3NF normalization design to support complete storage and efficient querying of basketball game event data.
+
+Core Design Principles:
+1. Data Normalization: Eliminate redundancy and ensure data consistency
+2. Event-Driven: Unified event table handles different types of events (shots, passes, turnovers)
+3. Idempotent Import: Support data re-import through source_event_id unique constraint
+4. Performance Optimization: Targeted index design supports high-frequency query scenarios
+
+Main Table Structure:
+- seasons/games/game_teams: Season and game management, supporting multi-season data
+- teams/players: Core entity tables establishing team and player relationships
+- events: Central event table storing all game events with position coordinates and timestamps
+- actions: Action type dictionary table (code/name) supporting tactical classifications (pick-and-roll, isolation, post-up, off-ball screen)
+- shot_events/pass_events/turnover_events: Event detail tables storing specialized fields for specific event types
+
+Index Strategy:
+- events table establishes single-column indexes on player_id, game_id, action_id for basic queries
+- Composite index events(action_id, event_type) optimizes event statistics by action type
+- Composite index events(player_id, action_id) optimizes player-specific action performance analysis
+- source_event_id unique index ensures idempotent data import
+
+Extensibility Design:
+- Dictionary tables support addition of new action types
+- Event detail tables can independently extend fields
+- Season tables support multi-season data management
+- Coordinate field precision supports tactical analysis requirements

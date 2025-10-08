@@ -1,0 +1,230 @@
+<div class="court-visualization">
+  <!-- 过滤工具栏 -->
+  <div class="viz-toolbar" *ngIf="enableFiltering">
+    <div class="filter-section">
+      <h4>Event Types:</h4>
+      <div class="filter-buttons">
+        <button 
+          *ngFor="let eventType of ['shot', 'pass', 'turnover']" 
+          [class.active]="isEventTypeActive(eventType)"
+          (click)="toggleEventType(eventType)"
+          class="filter-btn event-filter">
+          {{ eventType | titlecase }}
+        </button>
+      </div>
+    </div>
+    
+    <div class="filter-section">
+      <h4>Action Types:</h4>
+      <div class="filter-buttons">
+        <button 
+          *ngFor="let actionType of ['Pick & Roll', 'Isolation', 'Post-up', 'Off-Ball Screen', 'UNKNOWN']" 
+          [class.active]="isActionTypeActive(actionType)"
+          (click)="toggleActionType(actionType)"
+          class="filter-btn action-filter">
+          {{ actionType }}
+        </button>
+      </div>
+    </div>
+
+    <!-- 抽样提示 -->
+    <div class="sampling-warning" *ngIf="isSampled">
+      <svg width="16" height="16" viewBox="0 0 24 24" class="info-icon">
+        <path fill="currentColor" d="M11,9H13V7H11M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M11,17H13V11H11V17Z"/>
+      </svg>
+      <span>Showing first {{ maxPointsToRender }} of {{ events.length }} events</span>
+    </div>
+  </div>
+
+  <!-- SVG画布 -->
+  <div class="court-container">
+    <svg 
+      [attr.width]="width" 
+      [attr.height]="height" 
+      class="court-svg"
+      (mouseleave)="hideTooltip()">
+      
+      <!-- 半场背景 -->
+      <g class="court-background">
+        <!-- 边线 -->
+        <rect 
+          x="0" 
+          y="0" 
+          [attr.width]="width" 
+          [attr.height]="height" 
+          class="court-border" 
+          fill="none" 
+          stroke="var(--court-line-color, #ddd)" 
+          stroke-width="2"/>
+        
+        <!-- 中线（使用动态路径） -->
+        <path 
+          [attr.d]="courtPaths.centerLine" 
+          class="center-line" 
+          stroke="var(--court-line-color, #ddd)" 
+          stroke-width="1" 
+          fill="none"/>
+        
+        <!-- 三分线（简化） -->
+        <path 
+          [attr.d]="courtPaths.threePointLine" 
+          class="three-point-line" 
+          fill="none" 
+          stroke="var(--court-line-color, #ddd)" 
+          stroke-width="1"/>
+        
+        <!-- 罚球区（使用像素绑定） -->
+        <rect 
+          [attr.x]="courtPaths.freeThrowRect.x"
+          [attr.y]="courtPaths.freeThrowRect.y"
+          [attr.width]="courtPaths.freeThrowRect.width"
+          [attr.height]="courtPaths.freeThrowRect.height"
+          class="free-throw-area" 
+          fill="none" 
+          stroke="var(--court-line-color, #ddd)" 
+          stroke-width="1"/>
+        
+        <!-- 篮筐 -->
+        <circle 
+          [attr.cx]="width / 2" 
+          [attr.cy]="height / 2" 
+          r="3" 
+          class="basket" 
+          fill="var(--basket-color, #333)" 
+          stroke="var(--court-line-color, #ddd)" 
+          stroke-width="1"/>
+      </g>
+
+      <!-- 事件点 -->
+      <g class="events-layer">
+        <g 
+          *ngFor="let item of filteredEvents; trackBy: trackByEventId" 
+          [attr.class]="'event-group ' + getEventClass(item.event)"
+          [style.opacity]="item.opacity"
+          (mouseenter)="showTooltip(item, $event)"
+          (mouseleave)="hideTooltip()">
+          
+          <!-- 投篮：圆形 -->
+          <circle 
+            *ngIf="item.event.eventType === 'shot'" 
+            [attr.cx]="item.x" 
+            [attr.cy]="item.y" 
+            [attr.r]="pointSize"
+            [attr.fill]="getShotFill(item.event as VizShot)"
+            [attr.stroke]="getShotStroke(item.event as VizShot)"
+            stroke-width="2"
+            class="shot-point">
+          </circle>
+          
+          <!-- 传球：三角形 -->
+          <polygon 
+            *ngIf="item.event.eventType === 'pass'" 
+            [attr.points]="getTrianglePoints(item.x, item.y, pointSize)"
+            [attr.fill]="getEventColor(item.event)"
+            class="pass-point">
+          </polygon>
+          
+          <!-- 失误：叉号 -->
+          <g 
+            *ngIf="item.event.eventType === 'turnover'" 
+            [attr.transform]="'translate(' + item.x + ',' + item.y + ')'"
+            class="turnover-point">
+            <line 
+              x1="-4" 
+              y1="-4" 
+              x2="4" 
+              y2="4" 
+              [attr.stroke]="getEventColor(item.event)" 
+              stroke-width="2"/>
+            <line 
+              x1="4" 
+              y1="-4" 
+              x2="-4" 
+              y2="4" 
+              [attr.stroke]="getEventColor(item.event)" 
+              stroke-width="2"/>
+          </g>
+        </g>
+      </g>
+
+      <!-- Tooltip -->
+      <g 
+        *ngIf="tooltipEvent && showTooltips" 
+        class="tooltip"
+        [attr.transform]="'translate(' + tooltipPosition.x + ',' + tooltipPosition.y + ')'">
+        <rect 
+          x="-5" 
+          y="-20" 
+          width="200" 
+          height="16" 
+          rx="3" 
+          class="tooltip-bg" 
+          fill="rgba(0,0,0,0.8)"/>
+        <text 
+          x="0" 
+          y="-5" 
+          class="tooltip-text" 
+          fill="white" 
+          font-size="12">
+          {{ getTooltipText(tooltipEvent) }}
+        </text>
+      </g>
+    </svg>
+  </div>
+
+  <!-- 图例 -->
+  <div class="legend">
+    <div class="legend-section">
+      <h5>Event Types</h5>
+      <div class="legend-items">
+        <div class="legend-item">
+          <svg width="16" height="16" class="legend-icon">
+            <circle cx="8" cy="8" r="4" fill="#4CAF50" stroke="#4CAF50" stroke-width="2"/>
+          </svg>
+          <span>Shot Make</span>
+        </div>
+        <div class="legend-item">
+          <svg width="16" height="16" class="legend-icon">
+            <circle cx="8" cy="8" r="4" fill="none" stroke="#F44336" stroke-width="2"/>
+          </svg>
+          <span>Shot Miss</span>
+        </div>
+        <div class="legend-item">
+          <svg width="16" height="16" class="legend-icon">
+            <polygon points="8,4 12,12 4,12" fill="#2196F3"/>
+          </svg>
+          <span>Pass</span>
+        </div>
+        <div class="legend-item">
+          <svg width="16" height="16" class="legend-icon">
+            <line x1="4" y1="4" x2="12" y2="12" stroke="#FF9800" stroke-width="2"/>
+            <line x1="12" y1="4" x2="4" y2="12" stroke="#FF9800" stroke-width="2"/>
+          </svg>
+          <span>Turnover</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="legend-section">
+      <h5>Statistics</h5>
+      <div class="legend-stats">
+        <div class="stat-item">
+          <span class="stat-label">Shots:</span>
+          <span class="stat-value">{{ getEventStats().shot }}</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Passes:</span>
+          <span class="stat-value">{{ getEventStats().pass }}</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Turnovers:</span>
+          <span class="stat-value">{{ getEventStats().turnover }}</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Total:</span>
+          <span class="stat-value">{{ filteredEvents.length }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

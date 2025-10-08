@@ -1,0 +1,297 @@
+{
+  "name": "Michael Jordan",
+  "playerID": 0,
+  "totalShotAttempts": 20,
+  "totalPoints": 23,
+  "totalPasses": 19,
+  "totalPotentialAssists": 5,
+  "totalTurnovers": 1,
+  "totalPassingTurnovers": 1,
+  "pickAndRollCount": 31,
+  "isolationCount": 4,
+  "postUpCount": 0,
+  "offBallScreenCount": 4,
+  "pickAndRoll": {
+    "totalShotAttempts": 14,
+    "totalPoints": 12,
+    "totalPasses": 17,
+    "totalPotentialAssists": 5,
+    "totalTurnovers": 1,
+    "totalPassingTurnovers": 1,
+    "shots": [
+      {
+        "loc": [
+          -3.62,
+          25.68
+        ],
+        "points": 0,
+        "shot_result": "miss"
+      },
+      {
+        "loc": [
+          17.04,
+          19.11
+        ],
+        "points": 0,
+        "shot_result": "miss"
+      },
+      {
+        "loc": [
+          13.06,
+          13.33
+        ],
+        "points": 0,
+        "shot_result": "miss"
+      },
+      {
+        "loc": [
+          -9.65,
+          7.56
+        ],
+        "points": 0,
+        "shot_result": "miss"
+      },
+      {
+        "loc": [
+          -3.79,
+          31.49
+        ],
+        "points": 0,
+        "shot_result": "miss"
+      },
+      {
+        "loc": [
+          2.49,
+          -0.01
+        ],
+        "points": 0,
+        "shot_result": "miss"
+      },
+      {
+        "loc": [
+          19.85,
+          16.21
+        ],
+        "points": 3,
+        "shot_result": "make"
+      },
+      {
+        "loc": [
+          6.97,
+          14.72
+        ],
+        "points": 2,
+        "shot_result": "make"
+      },
+      {
+        "loc": [
+          -1.24,
+          1.47
+        ],
+        "points": 2,
+        "shot_result": "make"
+      },
+      {
+        "loc": [
+          -7.73,
+          7.73
+        ],
+        "points": 0,
+        "shot_result": "miss"
+      },
+      {
+        "loc": [
+          16.12,
+          9.77
+        ],
+        "points": 3,
+        "shot_result": "make"
+      },
+      {
+        "loc": [
+          6.97,
+          19.37
+        ],
+        "points": 0,
+        "shot_result": "miss"
+      },
+      {
+        "loc": [
+          -2.93,
+          26.46
+        ],
+        "points": 0,
+        "shot_result": "miss"
+      },
+      {
+        "loc": [
+          -5.01,
+          0.4
+        ],
+        "points": 2,
+        "shot_result": "make"
+      }
+    ],
+    "passes": [
+      {
+        "startLoc": [
+          5.48,
+          23.03
+        ],
+        "endLoc": null,
+        "isCompleted": true,
+        "isPotentialAssist": false,
+        "isTurnover": false,
+        "target_player_id": null
+      },
+      {
+        "startLoc": [
+          -6.94,
+          24.15
+        ],
+        "endLoc": null,
+        "isCompleted": true,
+        "isPotentialAssist": false,
+        "isTurnover": false,
+        "target_player_id": null
+      },
+      {
+        "startLoc": [
+          8.39,
+          16.59
+        ],
+        "endLoc": null,
+        "isCompleted": true,
+        "isPotentialAssist": true,
+        "isTurnover": false,
+        "target_player_id": null
+      }
+    ],
+    "turnovers": [
+      {
+        "loc": [
+          -12.06,
+          9.4
+        ],
+        "turnover_type": "general"
+      }
+    ]
+  },
+  "isolation": {
+    "totalShotAttempts": 3,
+    "totalPoints": 4,
+    "totalPasses": 1,
+    "totalPotentialAssists": 0,
+    "totalTurnovers": 0,
+    "totalPassingTurnovers": 0,
+    "shots": [
+      {
+        "loc": [
+          20.57,
+          15.97
+        ],
+        "points": 0,
+        "shot_result": "miss"
+      },
+      {
+        "loc": [
+          6.81,
+          19.89
+        ],
+        "points": 2,
+        "shot_result": "make"
+      },
+      {
+        "loc": [
+          -0.95,
+          9.7
+        ],
+        "points": 2,
+        "shot_result": "make"
+      }
+    ],
+    "passes": [
+      {
+        "startLoc": [
+          -0.54,
+          10.94
+        ],
+        "endLoc": null,
+        "isCompleted": true,
+        "isPotentialAssist": false,
+        "isTurnover": false,
+        "target_player_id": null
+      }
+    ],
+    "turnovers": []
+  },
+  "postUp": {
+    "totalShotAttempts": 0,
+    "totalPoints": 0,
+    "totalPasses": 0,
+    "totalPotentialAssists": 0,
+    "totalTurnovers": 0,
+    "totalPassingTurnovers": 0,
+    "shots": [],
+    "passes": [],
+    "turnovers": []
+  },
+  "offBallScreen": {
+    "totalShotAttempts": 3,
+    "totalPoints": 7,
+    "totalPasses": 1,
+    "totalPotentialAssists": 0,
+    "totalTurnovers": 0,
+    "totalPassingTurnovers": 0,
+    "shots": [
+      {
+        "loc": [
+          11.63,
+          23.77
+        ],
+        "points": 4,
+        "shot_result": "make"
+      },
+      {
+        "loc": [
+          -19.63,
+          14.74
+        ],
+        "points": 3,
+        "shot_result": "make"
+      },
+      {
+        "loc": [
+          14.25,
+          21.37
+        ],
+        "points": 0,
+        "shot_result": "miss"
+      }
+    ],
+    "passes": [
+      {
+        "startLoc": [
+          2.9,
+          31.41
+        ],
+        "endLoc": null,
+        "isCompleted": true,
+        "isPotentialAssist": false,
+        "isTurnover": false,
+        "target_player_id": null
+      }
+    ],
+    "turnovers": []
+  },
+  "totalShotAttemptsRank": 3,
+  "totalPointsRank": 2,
+  "totalPassesRank": 5,
+  "totalPotentialAssistsRank": 4,
+  "totalTurnoversRank": 8,
+  "totalPassingTurnoversRank": 7,
+  "pickAndRollCountRank": 1,
+  "isolationCountRank": 6,
+  "postUpCountRank": 10,
+  "offBallScreenCountRank": 3
+}
