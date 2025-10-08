@@ -31,7 +31,17 @@ SECRET_KEY = 'x31d0_@i19bz)q*_nibl8#p224$hu1yhk$or$ew=7j#v5h3%4f'
 # SECURITY WARNING: don't run with debug turned on in production!
 # Railway environment configuration
 DEBUG = os.getenv('DEBUG', 'False').lower() == 'true'
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '*').split(',') if os.getenv('ALLOWED_HOSTS') else ['*']
+
+# Allow Railway domains and localhost
+ALLOWED_HOSTS = [
+    '.railway.app',
+    '.up.railway.app', 
+    'localhost',
+    '127.0.0.1'
+]
+# Add custom domains if specified
+if os.getenv('ALLOWED_HOSTS'):
+    ALLOWED_HOSTS.extend(os.getenv('ALLOWED_HOSTS').split(','))
 
 # Railway proxy headers
 USE_X_FORWARDED_HOST = True

@@ -1,33 +1,26 @@
-appnope
-asgiref
-backcall
-decorator
+# Core Django
 Django>=4.0.0,<5.0.0
-django-cors-headers==4.3.1
-djangorestframework
-django-spa
+
+# Database
+psycopg2-binary==2.9.9
+
+# Web Server
+gunicorn==21.2.0
+
+# Static Files
+whitenoise==6.6.0
+
+# Environment
+python-dotenv==1.0.0
+
+# Database URL parsing
 dj-database-url==2.1.0
-gunicorn==20.1.0
-ipython
-ipython-genutils
-jedi
-matplotlib-inline
-numpy
-pandas
-parso
-pexpect
-pickleshare
-prompt-toolkit
-psycopg2-binary
-ptyprocess
-Pygments
-python-dateutil
-python-dotenv==1.0.1
-pytz
-six
-sqlparse
-toml
-traitlets
-typing-extensions
-whitenoise==6.5.0
-wcwidth
+
+# CORS (optional)
+django-cors-headers==4.3.1
+
+# REST Framework (if needed)
+djangorestframework==3.14.0
+
+# Production WSGI
+dj-static==0.0.6
