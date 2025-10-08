@@ -1,0 +1,16 @@
+[phases.setup]
+nixPkgs = ["python311", "pip"]
+
+[phases.install]
+cmds = [
+  "pip install -r backend/requirements.txt"
+]
+
+[phases.build]
+cmds = [
+  "cd backend && python manage.py collectstatic --noinput",
+  "cd backend && python manage.py migrate --noinput"
+]
+
+[start]
+cmd = "cd backend && gunicorn app.wsgi:application --bind 0.0.0.0:$PORT --workers 2 --timeout 30"
