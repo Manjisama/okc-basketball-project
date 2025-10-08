@@ -2,7 +2,7 @@
 
 ## Basic Information
 - **Name**: [Yi Tang]
-- **Email**: [you@example.com]
+- **Email**: [manjiji88@gmail.com]
 - **Deployed Frontend URL**: [https://frontend-xxxx.up.railway.app]
 
 ## Local Development Setup

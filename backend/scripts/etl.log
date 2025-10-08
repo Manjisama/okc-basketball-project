@@ -1,0 +1,10 @@
+2025-10-07 22:23:05,214 - INFO - Starting ETL process...
+2025-10-07 22:23:05,215 - INFO - Raw data directory: C:\Users\Manji\Downloads\software-engineer-intern-technical-project-deadline-10-07-25-Manjisama\backend\raw_data
+2025-10-07 22:23:05,215 - INFO - Batch size: 1000
+2025-10-07 22:23:05,215 - INFO - Dry run: True
+2025-10-07 22:23:05,215 - INFO - No update mode: False
+2025-10-07 22:23:09,297 - ERROR - ETL process failed: connection to server at "localhost" (::1), port 5432 failed: Connection refused (0x0000274D/10061)
+	Is the server running on that host and accepting TCP/IP connections?
+connection to server at "localhost" (127.0.0.1), port 5432 failed: Connection refused (0x0000274D/10061)
+	Is the server running on that host and accepting TCP/IP connections?
+
